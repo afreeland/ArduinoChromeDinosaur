@@ -12,6 +12,8 @@ Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS,  TFT_DC, TFT_RST);
 #define TFT_SCLK 13   // set these to be whatever pins you like!
 #define TFT_MOSI 11   // set these to be whatever pins you like!
 
+bool gameStarted = false; // Lets us know to start our actual game and not display screen
+
 // How fast the game is moving
 int movingRate = 10;
 uint16_t defaultColor = ST7735_BLACK;
@@ -35,6 +37,7 @@ bool isJumping = false; // Whether the dinosaur jumping animation is happening
 int jumpHeight = 0; // The current height the dinosaur is jumping (the y value that we are setting)
 int jumpTargetHeight = 70; // Controls how height the dinosaur will jump
 unsigned long score = 0; // Store the score
+
 void setup() {
   Serial.begin(9600);
   Serial.print("Dinosaur game from Chrome");
@@ -42,33 +45,14 @@ void setup() {
   tft.initR(INITR_BLACKTAB);   // initialize a ST7735S chip, black tab
   tft.setRotation(1);
   Serial.println("Initialized");
-
-  uint16_t time = millis();
-  tft.fillScreen(ST7735_WHITE);
-  time = millis() - time;
-
-  Serial.println(time, DEC);
-  delay(500);
-
   pinMode(btn, INPUT_PULLUP);
-
-  // put your main code here, to run repeatedly:
-  //drawDinosaur(ST7735_BLACK);
-  legTime = millis();
-  difficultyTime = millis();
-
-  tft.setCursor(80, 1);
-  tft.setTextColor(defaultColor);
-  tft.setTextSize(1);
-  tft.println("HI");
   
-  tft.setCursor(95, 1);
-  tft.setTextColor(ST7735_BLACK);
-  tft.setTextSize(1);
-  tft.println("1205");
 
+  initiateGame();
   
 }
+
+
 
 
 void loop() {
@@ -328,3 +312,59 @@ void drawDinosaur(int y) {
 //    tft.fillRect(topLeftX, 92, boxWidth, boxHeight, ST7735_WHITE);
 
 }
+
+void initiateGame(){
+
+  
+  tft.fillScreen(ST7735_BLACK);
+
+  tft.setCursor(37, 40);
+  tft.setTextColor(ST7735_WHITE);
+  tft.setTextSize(3);
+  tft.println("T-REX");
+
+  tft.drawLine(25, 70, 140, 70, ST7735_WHITE);
+
+  tft.setCursor(80, 80);
+  tft.setTextColor(ST7735_WHITE);
+  tft.setTextSize(1);
+  tft.println("mini-game");
+
+  while(!gameStarted){
+    int val = digitalRead(btn);     // read the input pin
+    if(val == 0){
+      gameStarted = true;
+    }
+      
+  }
+
+  uint16_t time = millis();
+  tft.fillScreen(ST7735_WHITE);
+  time = millis() - time;
+  
+  Serial.println(time, DEC);
+  delay(500);
+  
+  
+  legTime = millis();
+  difficultyTime = millis();
+  
+  tft.setCursor(80, 1);
+  tft.setTextColor(defaultColor);
+  tft.setTextSize(1);
+  tft.println("HI");
+  
+  tft.setCursor(95, 1);
+  tft.setTextColor(ST7735_BLACK);
+  tft.setTextSize(1);
+  tft.println("1205");
+  
+
+}
+
+void gameOver(){
+  
+  gameStarted = false;
+  initiateGame();
+}
+

@@ -37,7 +37,7 @@ bool isJumping = false; // Whether the dinosaur jumping animation is happening
 int jumpHeight = 0; // The current height the dinosaur is jumping (the y value that we are setting)
 int jumpTargetHeight = 70; // Controls how height the dinosaur will jump
 unsigned long score = 0; // Store the score
-
+uint32_t scoreTimer; // If we use standard millis() we wont know when the game started...so we need a timer to know when user started game
 void setup() {
   Serial.begin(9600);
   Serial.print("Dinosaur game from Chrome");
@@ -56,7 +56,9 @@ void setup() {
 
 
 void loop() {
-  score = (millis() / 1000);
+  if(gameStarted == true)
+    score = ( (millis() - scoreTimer) / 1000);
+    
   displayScore(score);
   int val = digitalRead(btn);     // read the input pin
   if(val == 0 && isJumping == false){
@@ -335,7 +337,6 @@ void initiateGame(){
     if(val == 0){
       gameStarted = true;
     }
-      
   }
 
   uint16_t time = millis();
@@ -358,8 +359,9 @@ void initiateGame(){
   tft.setTextColor(ST7735_BLACK);
   tft.setTextSize(1);
   tft.println("1205");
+  scoreTimer = millis();
+  score = 0;
   
-
 }
 
 void gameOver(){
